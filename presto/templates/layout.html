@@ -8,6 +8,8 @@
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" media="screen" title="no title" charset="utf-8">
+
     <!-- jQuery Core -->
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.3.js"></script>
 
@@ -33,27 +35,9 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 
                 <ul class="nav navbar-nav">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Użytkownicy <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">Nowy</a></li>
-                            <li><a href="#">Edycja</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sposoby dostawy <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">Nowy</a></li>
-                            <li><a href="#">Edycja</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Rodzaje aukcji <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">Nowy</a></li>
-                            <li><a href="#">Edycja</a></li>
-                        </ul>
-                    </li>
+                    <li><a href="{{ url_for('manage_users') }}">Użytkownicy</a></li>
+                    <li><a href="#">Sposoby dostawy</a></li>
+                    <li><a href="#">Rodzaje aukcji</a></li>
                     <li><a href="#">Synchronizacja kategorii</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">

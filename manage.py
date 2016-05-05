@@ -12,10 +12,12 @@ def test():
     tests = unittest.TestLoader().discover('presto/tests')
     unittest.TextTestRunner(verbosity=2).run(tests)
 
+
 @manager.command
 def run():
     """Starts server."""
     app.run(debug=True)
+
 
 @manager.command
 def create_db():
@@ -30,7 +32,8 @@ def create_db():
     db_session.add(user2)
     db_session.commit()
 
-    account = models.Account('danzaw', 'danzaw@gmail.com', "it's a secret", 'webapi_key')
+    account = models.Account('danzaw', 'danzaw@gmail.com',
+                             "it's a secret", 'webapi_key')
 
     db_session.add(account)
     db_session.commit()

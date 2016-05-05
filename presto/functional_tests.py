@@ -9,6 +9,7 @@ class UserManagementTest(unittest.TestCase):
 
     def setUp(self):
         self.browser = webdriver.Firefox()
+        self.browser.implicitly_wait(3)
 
     def tearDown(self):
         self.browser.quit()
@@ -25,9 +26,12 @@ class UserManagementTest(unittest.TestCase):
         table_anchors = table.find_elements_by_tag_name('a')
         anchors = self.browser.find_elements_by_tag_name('a')
 
-        self.assertTrue(any([item.get_attribute("href").startswith(self.live_server_url + '/admin/users/add') for item in anchors]))
-        self.assertTrue(any([item.get_attribute("href").startswith(self.live_server_url + '/admin/users/edit') for item in table_anchors]))
-        self.assertTrue(any([item.get_attribute("href").startswith(self.live_server_url + '/admin/users/delete') for item in table_anchors]))
+        self.assertTrue(any([item.get_attribute("href").startswith(
+            self.live_server_url + '/admin/users/add') for item in anchors]))
+        self.assertTrue(any([item.get_attribute("href").startswith(
+            self.live_server_url + '/admin/users/edit') for item in table_anchors]))
+        self.assertTrue(any([item.get_attribute("href").startswith(
+            self.live_server_url + '/admin/users/delete') for item in table_anchors]))
 
     def test_add_new_user(self):
         # Przechodze do panelu zarzadzania uzytkownikami
@@ -38,11 +42,17 @@ class UserManagementTest(unittest.TestCase):
         # strone sie przeladowuje i znowu pokazuje liste uzytkownikow rozszerzona
         # o tego ktorego wprowadzilem
 
-        self.browser.get(self.live_server_url + '/admin/users')
-        rows_count = len(self.browser.find_element_by_id('users-list').find_elements_by_tag_name('tr'))
+        response = self.browser.get(self.live_server_url + '/admin/users')
+        rows_count = len(self.browser.find_element_by_id(
+            'users-list').find_elements_by_tag_name('tr'))
 
         new_user_button = self.browser.find_element_by_id('add-user')
         new_user_button.click()
+
+        self.assertIn('name="login"', self.browser.page_source)
+        self.assertIn('name="mail"', self.browser.page_source)
+        self.assertIn('name="password"', self.browser.page_source)
+        self.assertIn('name="submit"', self.browser.page_source)
 
         login_input = self.browser.find_element_by_name('login')
         mail_input = self.browser.find_element_by_name('mail')
@@ -54,15 +64,10 @@ class UserManagementTest(unittest.TestCase):
         password_input.send_keys('pass')
         submit.click()
 
-        rows_count_after_add_new_user = len(self.browser.find_element_by_id('users-list').find_elements_by_tag_name('tr'))
+        rows_count_after_add_new_user = len(self.browser.find_element_by_id(
+            'users-list').find_elements_by_tag_name('tr'))
 
         self.assertIs(rows_count_after_add_new_user, rows_count + 1)
-
-
-
-
-
-
 
 if __name__ == '__main__':
     unittest.main()
