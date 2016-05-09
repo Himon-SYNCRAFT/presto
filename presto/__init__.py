@@ -2,7 +2,8 @@ from flask import Flask
 from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '$2a$12$9I0GUWWW8BqiQzJHwOB5Te3gtqzTiPT8uqqi5M9HNsITLSmPAx59K'
+app.config.from_object('presto.settings.DevelopmentConfig')
+print(app.config['SQLALCHEMY_DATABASE_URI'])
 bcrypt = Bcrypt(app)
 
 from presto import views

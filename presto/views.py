@@ -27,8 +27,7 @@ def add_user():
             db_session.commit()
             return redirect('/admin/users', 303)
         except IntegrityError:
-            form.login.errors.append('Login or mail already in use')
+            form.login.errors.append('Login lub mail jest już używany')
             db_session.rollback()
-
 
     return render_template('user.html', form=form)

@@ -1,5 +1,5 @@
-from presto import bcrypt
-from presto.database import Base
+from presto import bcrypt, app
+from presto.database import Base, db_session
 from sqlalchemy import Column, Integer, String, Binary, CHAR, ForeignKey, Float, \
     Boolean, Table, Numeric, Text, DateTime
 from sqlalchemy.orm import relationship
