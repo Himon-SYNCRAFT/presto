@@ -1,5 +1,6 @@
 from presto import app, models
 from presto.database import Base, db_session
+from presto.tests import functional_tests
 from flask.ext.script import Manager
 import unittest
 
@@ -10,6 +11,12 @@ manager = Manager(app)
 def test():
     """Runs the unit tests without coverage."""
     tests = unittest.TestLoader().discover('presto/tests')
+    unittest.TextTestRunner(verbosity=2).run(tests)
+
+@manager.command
+def func_tests():
+    """Runs the unit tests without coverage."""
+    tests = unittest.TestLoader().loadTestsFromModule(functional_tests)
     unittest.TextTestRunner(verbosity=2).run(tests)
 
 

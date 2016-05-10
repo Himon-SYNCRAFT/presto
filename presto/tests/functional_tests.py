@@ -1,18 +1,49 @@
+from flask import Flask
+from flask.ext.testing import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from presto import app, models
+from presto.tests.base import BaseTestCase
+from presto.database import db_session, Base
+from sqlalchemy import create_engine
 import unittest
 
 
-class UserManagementTest(unittest.TestCase):
-
-    live_server_url = 'http://localhost:5000'
+class UserManagementTest(LiveServerTestCase):
 
     def setUp(self):
+        self.test_engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+
+        db_session.configure(bind=self.test_engine)
+        Base.metadata.create_all(self.test_engine)
+
+        user = models.User('danzaw', 'danzaw@mail.pl', "it's a secret")
+        user2 = models.User('himon', 'himon@mail.pl', "it's a secret")
+
+        db_session.add(user)
+        db_session.add(user2)
+        db_session.commit()
+
+        account = models.Account('danzaw', 'danzaw@gmail.com',
+                                 "it's a secret", 'webapi_key')
+
+        db_session.add(account)
+        db_session.commit()
+
         self.browser = webdriver.Firefox()
-        self.browser.implicitly_wait(3)
+        self.browser.implicitly_wait(30)
 
     def tearDown(self):
+        db_session.remove()
+        Base.metadata.drop_all(self.test_engine)
+
         self.browser.quit()
+
+    def create_app(self):
+        app.config.from_object('presto.settings.TestConfig')
+        self.live_server_url = 'http://localhost:' + \
+            str(app.config['LIVESERVER_PORT'])
+        return app
 
     def test_user_management_page(self):
         # Przechodze do panelu zarzadzania uzytkownikami
@@ -59,15 +90,12 @@ class UserManagementTest(unittest.TestCase):
         password_input = self.browser.find_element_by_name('password')
         submit = self.browser.find_element_by_name('submit')
 
-        login_input.send_keys('user1')
+        login_input.send_keys('user123456')
         mail_input.send_keys('mail_input@wp.pl')
-        password_input.send_keys('pass')
+        password_input.send_keys('pass123456')
         submit.click()
 
         rows_count_after_add_new_user = len(self.browser.find_element_by_id(
             'users-list').find_elements_by_tag_name('tr'))
 
         self.assertIs(rows_count_after_add_new_user, rows_count + 1)
-
-if __name__ == '__main__':
-    unittest.main()
