@@ -11,10 +11,16 @@ import unittest
 
 class UserManagementTest(LiveServerTestCase):
 
-    def setUp(self):
+    def create_app(self):
+        app.config.from_object('presto.settings.TestConfig')
+        self.live_server_url = 'http://localhost:' + \
+            str(app.config['LIVESERVER_PORT'])
         self.test_engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
-
         db_session.configure(bind=self.test_engine)
+
+        return app
+
+    def setUp(self):
         Base.metadata.create_all(self.test_engine)
 
         user = models.User('danzaw', 'danzaw@mail.pl', "it's a secret")
@@ -35,15 +41,10 @@ class UserManagementTest(LiveServerTestCase):
 
     def tearDown(self):
         db_session.remove()
+        Base.metadata.reflect(self.test_engine)
         Base.metadata.drop_all(self.test_engine)
 
         self.browser.quit()
-
-    def create_app(self):
-        app.config.from_object('presto.settings.TestConfig')
-        self.live_server_url = 'http://localhost:' + \
-            str(app.config['LIVESERVER_PORT'])
-        return app
 
     def test_user_management_page(self):
         # Przechodze do panelu zarzadzania uzytkownikami
@@ -74,8 +75,6 @@ class UserManagementTest(LiveServerTestCase):
         # o tego ktorego wprowadzilem
 
         response = self.browser.get(self.live_server_url + '/admin/users')
-        rows_count = len(self.browser.find_element_by_id(
-            'users-list').find_elements_by_tag_name('tr'))
 
         new_user_button = self.browser.find_element_by_id('add-user')
         new_user_button.click()
@@ -90,12 +89,42 @@ class UserManagementTest(LiveServerTestCase):
         password_input = self.browser.find_element_by_name('password')
         submit = self.browser.find_element_by_name('submit')
 
-        login_input.send_keys('user123456')
-        mail_input.send_keys('mail_input@wp.pl')
+        login_input.send_keys('user1234567')
+        mail_input.send_keys('mail_input2@wp.pl')
         password_input.send_keys('pass123456')
         submit.click()
 
-        rows_count_after_add_new_user = len(self.browser.find_element_by_id(
-            'users-list').find_elements_by_tag_name('tr'))
+        td = self.browser.find_element_by_id(
+            'users-list').find_elements_by_tag_name('td')
 
-        self.assertIs(rows_count_after_add_new_user, rows_count + 1)
+        self.assertIn('user1234567', [item.text for item in td])
+        self.assertIn('mail_input2@wp.pl', [item.text for item in td])
+        self.assertNotIn('pass123456', [item.text for item in td])
+
+    def test_edit_user(self):
+        pass
+
+    def test_delete_user(self):
+        # Jest na stronie zarzadzania uzytkownikami
+        # Klikam na przycisk usuwania 1 uzytkowika
+        # Lista uzytkownikow sie przeladowuje
+        # Nie ma juz na liscie uzytkownika, ktorego usunalem
+
+        response = self.browser.get(self.live_server_url + '/admin/users')
+        user = models.User.query.first()
+
+        td = self.browser.find_element_by_id(
+            'users-list').find_elements_by_tag_name('td')
+        self.assertIn(user.login, [item.text for item in td])
+
+        table = self.browser.find_element_by_id('users-list')
+
+        delete_user_url = '/admin/users/delete/' + str(user.id)
+        delete_button_xpath = "//a[@href='{}']".format(delete_user_url)
+        delete_button = table.find_element_by_xpath(delete_button_xpath)
+
+        delete_button.click()
+
+        td = self.browser.find_element_by_id(
+            'users-list').find_elements_by_tag_name('td')
+        self.assertNotIn(user.login, [item.text for item in td])
