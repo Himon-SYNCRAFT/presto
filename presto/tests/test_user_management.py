@@ -1,4 +1,5 @@
 import unittest
+
 from presto import app
 from presto.models import User
 from presto.tests.base import BaseTestCase
@@ -84,10 +85,29 @@ class TestUserManagement(BaseTestCase):
         self.assertEqual(users_count_after_post, users_count_before_post)
 
     def test_delete_existing_user(self):
-        pass
+        user_count_before_delete = User.query.count()
+
+        if user_count_before_delete == 0:
+            return
+
+        user = User.query.first()
+
+        user_id = str(user.id)
+        self.client.get('/admin/users/delete/' + user_id)
+
+        user_count_after_delete = User.query.count()
+
+        self.assertEqual(user_count_before_delete, user_count_after_delete + 1)
 
     def test_delete_not_existing_user(self):
-        pass
+        response = self.client.get('/admin/users/delete/' + '99')
+
+        self.assertStatus(response, 404)
+
+    def test_delete_invalid_id(self):
+        response = self.client.get('/admin/users/delete/' + 'abc')
+
+        self.assertStatus(response, 404)
 
     def test_edit_user(self):
         pass

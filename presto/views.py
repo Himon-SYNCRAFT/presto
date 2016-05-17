@@ -1,8 +1,8 @@
+from flask import redirect, render_template, request, url_for
 from presto import app
 from presto.database import db_session
-from presto.models import User
 from presto.forms import UserForm
-from flask import request, render_template, redirect
+from presto.models import User
 from sqlalchemy.exc import IntegrityError
 
 
@@ -25,9 +25,22 @@ def add_user():
         try:
             db_session.add(user)
             db_session.commit()
-            return redirect('/admin/users', 303)
+            return redirect(url_for('manage_users'))
         except IntegrityError:
-            form.login.errors.append('Login lub mail jest już używany')
             db_session.rollback()
+            form.login.errors.append('Login lub mail jest już używany')
 
     return render_template('user.html', form=form)
+
+
+@app.route('/admin/users/delete/<int:user_id>')
+def delete_user(user_id):
+    user = User.query.filter_by(id=user_id).first()
+
+    if user is None:
+        return render_template('errors/404.html'), 404
+
+    db_session.delete(user)
+    db_session.commit()
+
+    return redirect(url_for('manage_users'))
