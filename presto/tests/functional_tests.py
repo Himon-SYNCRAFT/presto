@@ -102,6 +102,43 @@ class UserManagementTest(LiveServerTestCase):
         self.assertNotIn('pass123456', [item.text for item in td])
 
     def test_edit_user(self):
+        response = self.browser.get(self.live_server_url + '/admin/users')
+        user = models.User.query.first()
+
+        td = self.browser.find_element_by_id(
+            'users-list').find_elements_by_tag_name('td')
+        self.assertIn(user.login, [item.text for item in td])
+
+        table = self.browser.find_element_by_id('users-list')
+
+        edit_user_url = '/admin/users/edit/' + str(user.id)
+        edit_button_xpath = "//a[@href='{}']".format(edit_user_url)
+        edit_button = table.find_element_by_xpath(edit_button_xpath)
+
+        edit_button.click()
+
+        login_input = self.browser.find_element_by_name('login')
+        mail_input = self.browser.find_element_by_name('mail')
+        submit = self.browser.find_element_by_name('submit')
+
+        self.assertEqual(login_input.get_attribute('value'), user.login)
+        self.assertEqual(mail_input.get_attribute('value'), user.mail)
+
+        login_input.clear()
+        mail_input.clear()
+
+        login_input.send_keys('user7654321')
+        mail_input.send_keys('mail_input99@wp.pl')
+        submit.click()
+
+        td = self.browser.find_element_by_id(
+            'users-list').find_elements_by_tag_name('td')
+
+        self.assertIn('user7654321', [item.text for item in td])
+        self.assertIn('mail_input99@wp.pl', [item.text for item in td])
+
+
+    def test_change_password(self):
         pass
 
     def test_delete_user(self):
