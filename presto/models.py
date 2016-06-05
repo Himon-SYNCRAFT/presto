@@ -127,6 +127,10 @@ class ShippingType(Base):
     name = Column(String(128), nullable=False, unique=True)
     is_boolean = Column(Boolean, nullable=False, default=False) # odbiory osobiste itp jako checkboxy
 
+    def __init__(self, name, is_boolean):
+        self.name = name
+        self.is_boolean = is_boolean
+
 
 class ShippingValue(Base):
     __tablename__ = 'shipping_value'
@@ -149,6 +153,7 @@ class ProductTitle(Base):
     id = Column(Integer, primary_key=True)
 
     product_id = Column(Integer, ForeignKey('product.id'), nullable=False)
+    title = Column(String(50), nullable=False)
 
 
 class Auction(Base):

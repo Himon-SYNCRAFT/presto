@@ -1,8 +1,8 @@
 from flask import redirect, render_template, request, url_for
 from presto import app
 from presto.database import db_session
-from presto.forms import UserForm, EditUserForm
-from presto.models import User
+from presto.forms import UserForm, EditUserForm, ShippingTypesForm
+from presto.models import User, ShippingType
 from sqlalchemy.exc import IntegrityError
 
 
@@ -45,6 +45,7 @@ def delete_user(user_id):
 
     return redirect(url_for('manage_users'))
 
+
 @app.route('/admin/users/edit/<int:user_id>', methods=['GET', 'POST'])
 def edit_user(user_id):
     user = User.query.filter_by(id=user_id).first()
@@ -67,3 +68,23 @@ def edit_user(user_id):
             form.login.errors.append('Login lub mail jest już używany')
 
     return render_template('edit_user.html', form=form, user=user)
+
+
+@app.route('/admin/shipping/types')
+def manage_shipping_types():
+    shipping_types = ShippingType.query.all()
+    return render_template('shipping_types.html', shipping_types=enumerate(shipping_types, 1))
+
+@app.route('/admin/shipping/types/add')
+def add_shipping_type():
+    pass
+
+
+@app.route('/admin/shipping/types/edit/<int:shipping_type_id>')
+def edit_shipping_type(shipping_type_id):
+    pass
+
+
+@app.route('/admin/shipping/types/delete/<int:shipping_type_id>')
+def delete_shipping_type(shipping_type_id):
+    pass
