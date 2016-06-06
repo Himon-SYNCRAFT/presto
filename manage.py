@@ -20,9 +20,12 @@ def test(case_name=None):
 
 
 @manager.command
-def func_tests():
+def func_tests(case_name=None):
     """Runs the functional tests with Selenium"""
-    tests = unittest.TestLoader().loadTestsFromModule(functional_tests)
+    if case_name is None:
+        tests = unittest.TestLoader().loadTestsFromModule(functional_tests)
+    else:
+        tests = unittest.TestLoader().loadTestsFromName('presto.tests.functional_tests.' + case_name)
     unittest.TextTestRunner(verbosity=2).run(tests)
 
 
