@@ -37,7 +37,7 @@ class UserManagementTest(LiveServerTestCase):
         db_session.commit()
 
         self.browser = webdriver.Firefox()
-        self.browser.implicitly_wait(30)
+        self.browser.implicitly_wait(3)
 
     def tearDown(self):
         db_session.remove()
@@ -202,7 +202,7 @@ class ShippingTypeTestCase(LiveServerTestCase):
         db_session.commit()
 
         self.browser = webdriver.Firefox()
-        self.browser.implicitly_wait(30)
+        self.browser.implicitly_wait(3)
 
     def tearDown(self):
         db_session.remove()
@@ -241,17 +241,17 @@ class ShippingTypeTestCase(LiveServerTestCase):
         name_input = self.browser.find_element_by_name('name')
         is_boolean_input = self.browser.find_element_by_name('is_boolean')
 
-        name_input.send_keys('Kurier')
+        name_input.send_keys('Packomat')
         is_boolean_input.click()
 
-        save_button = self.browser.find_elements('submit')
+        save_button = self.browser.find_element_by_name('submit')
 
         save_button.click()
 
         table = self.browser.find_element_by_id('shipping-types-list')
         td = table.find_elements_by_tag_name('td')
 
-        self.assertIn('Kurier', [t.text for t in td])
+        self.assertIn('Packomat', [t.text for t in td])
 
     # def edit_shipping_type(self):
     #     pass
