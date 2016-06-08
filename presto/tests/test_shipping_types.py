@@ -53,9 +53,9 @@ class TestShippingTypesTestCase(BaseTestCase):
         ShippingType.query.filter_by(
             name='Paczkomat123', is_boolean=False).one()
 
-        self.client.post('/admin/shipping/types/add',
-                         data={'name': 'Paczkomat123'},
-                         follow_redirects=True)
+        response = self.client.post('/admin/shipping/types/add',
+                                    data={'name': 'Paczkomat123'},
+                                    follow_redirects=True)
 
         ShippingType.query.filter_by(
             name='Paczkomat123', is_boolean=False).one()
@@ -64,3 +64,66 @@ class TestShippingTypesTestCase(BaseTestCase):
 
         self.assertEqual(count_shipping_types_before_post + 1,
                          count_shipping_types_after_post)
+
+        self.assertIn('Nazwa jest już zajęta'.encode(
+            encoding='utf_8'), response.get_data())
+
+    def test_edit_shipping_types(self):
+        item = ShippingType.query.first()
+
+        new_name = item.name + '1234'
+        new_is_boolen = True
+
+        self.client.post(
+            '/admin/shipping/types/edit/'+ str(item.id),
+            data={'name': new_name, 'is_boolean': new_is_boolen}
+        )
+
+        item = ShippingType.query.filter_by(id=item.id).first()
+
+        self.assertEqual(item.name, new_name)
+        self.assertEqual(item.is_boolean, new_is_boolen)
+
+    def test_edit_shipping_types_invalid_data(self):
+        item = ShippingType.query.first()
+        count_shipping_types_before_post = ShippingType.query.count()
+
+        response = self.client.post(
+            '/admin/shipping/types/edit/'+ str(item.id),
+             data={'name': None, 'is_boolean': None},
+        )
+
+        count_shipping_types_after_post = ShippingType.query.count()
+
+        self.assertEqual(
+            count_shipping_types_before_post, count_shipping_types_after_post)
+
+        self.assertIn('Pole nazwa jest wymagane'.encode(
+            encoding='utf_8'), response.get_data())
+
+    def test_edit_shipping_types_duplicate(self):
+        item = ShippingType.query.first()
+        count_shipping_types_before_post = ShippingType.query.count()
+
+        response = self.client.post('/admin/shipping/types/add',
+                                    data={'name': item.name},
+                                    follow_redirects=True)
+
+        count_shipping_types_after_post = ShippingType.query.count()
+
+        self.assertEqual(count_shipping_types_before_post,
+                         count_shipping_types_after_post)
+
+        self.assertIn('Nazwa jest już zajęta'.encode(
+            encoding='utf_8'), response.get_data())
+
+    def test_edit_shipping_types_not_exist(self):
+        response = self.client.get('/admin/shipping/types/edit/1234')
+
+        self.assertStatus(response, 404)
+
+        response = self.client.post('/admin/shipping/types/edit/1234',
+                         data={'name': 'Paczkomat123'},
+                         follow_redirects=True)
+
+        self.assertStatus(response, 404)
