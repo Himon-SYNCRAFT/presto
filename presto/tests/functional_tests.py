@@ -228,7 +228,7 @@ class ShippingTypeTestCase(LiveServerTestCase):
         anchors = self.browser.find_elements_by_tag_name('a')
 
         self.assertTrue(any([(item.get_attribute('href') ==
-                             self.live_server_url + '/admin/shipping/types/add') for item in anchors]))
+                              self.live_server_url + '/admin/shipping/types/add') for item in anchors]))
 
     def test_add_shipping_type(self):
         self.browser.get(self.live_server_url + '/admin/shipping/types')
@@ -253,8 +253,34 @@ class ShippingTypeTestCase(LiveServerTestCase):
 
         self.assertIn('Packomat', [t.text for t in td])
 
-    # def edit_shipping_type(self):
-    #     pass
-    #
+    def edit_shipping_type(self):
+        shipping_type = models.ShippingType.query.first()
+
+        self.browser.get(self.live_server_url + '/admin/shipping/types')
+
+        table = self.browser.find_element_by_id('shipping-types-list')
+        anchors = table.find_elements_by_tag_name('a')
+
+        edit_url = '/admin/shipping/types/edit/' + str(shipping_type.id)
+        edit_button_xpath = "//a[@href='{}']".format(edit_url)
+        edit_button = table.find_element_by_xpath(edit_button_xpath)
+
+        edit_button.click()
+
+        name_input = self.browser.find_element_by_name('name')
+        is_boolean_input = self.browser.find_element_by_name('is_boolean')
+
+        name_input.send_keys('Paczkomat123')
+        is_boolean_input.click()
+
+        save_button = self.browser.find_element_by_name('submit')
+
+        save_button.click()
+
+        table = self.browser.find_element_by_id('shipping-types-list')
+        td = table.find_elements_by_tag_name('td')
+
+        self.assertIn('Paczkomat123', [t.text for t in td])
+
     # def delete_shipping_type(self):
     #     pass
