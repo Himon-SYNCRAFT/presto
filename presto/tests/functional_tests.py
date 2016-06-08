@@ -217,16 +217,18 @@ class ShippingTypeTestCase(LiveServerTestCase):
         table = self.browser.find_element_by_id('shipping-types-list')
         anchors = table.find_elements_by_tag_name('a')
 
-        self.assertTrue(any([item.get_attribute('href'.startswith(
-            '/admin/shipping/types/delete')) for item in anchors]))
+        print([item.get_attribute('href') for item in anchors])
 
-        self.assertTrue(any([item.get_attribute('href'.startswith(
-            '/admin/shipping/types/edit')) for item in anchors]))
+        self.assertTrue(any([item.get_attribute('href').startswith(
+            self.live_server_url + '/admin/shipping/types/delete') for item in anchors]))
+
+        self.assertTrue(any([item.get_attribute('href').startswith(
+            self.live_server_url + '/admin/shipping/types/edit') for item in anchors]))
 
         anchors = self.browser.find_elements_by_tag_name('a')
 
-        self.assertTrue(any([item.get_attribute('href') ==
-                             'admin/shipping/types/add' for item in anchors]))
+        self.assertTrue(any([(item.get_attribute('href') ==
+                             self.live_server_url + '/admin/shipping/types/add') for item in anchors]))
 
     def test_add_shipping_type(self):
         self.browser.get(self.live_server_url + '/admin/shipping/types')
@@ -250,7 +252,6 @@ class ShippingTypeTestCase(LiveServerTestCase):
         td = table.find_elements_by_tag_name('td')
 
         self.assertIn('Kurier', [t.text for t in td])
-
 
     # def edit_shipping_type(self):
     #     pass

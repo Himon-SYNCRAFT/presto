@@ -75,9 +75,25 @@ def manage_shipping_types():
     shipping_types = ShippingType.query.all()
     return render_template('shipping_types.html', shipping_types=enumerate(shipping_types, 1))
 
-@app.route('/admin/shipping/types/add')
+
+@app.route('/admin/shipping/types/add', methods=['GET', 'POST'])
 def add_shipping_type():
-    pass
+    form = ShippingTypesForm(request.form)
+
+    if request.method == 'POST' and form.validate():
+        shipping_type = ShippingType(name=form.name.data,
+                                     is_boolean=form.is_boolean.data)
+
+        db_session.add(shipping_type)
+
+        try:
+            db_session.commit()
+            return redirect(url_for('manage_shipping_types'))
+        except IntegrityError:
+            db_session.rollback()
+            form.name.errors.append('Nazwa jest już zajęta')
+
+    return render_template('shipping_types_add.html', form=form)
 
 
 @app.route('/admin/shipping/types/edit/<int:shipping_type_id>')
