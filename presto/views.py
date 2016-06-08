@@ -123,4 +123,12 @@ def edit_shipping_type(shipping_type_id):
 
 @app.route('/admin/shipping/types/delete/<int:shipping_type_id>')
 def delete_shipping_type(shipping_type_id):
-    pass
+    shipping_type = ShippingType.query.filter_by(id=shipping_type_id).first()
+
+    if shipping_type is None:
+        return render_template('errors/404.html'), 404
+
+    db_session.delete(shipping_type)
+    db_session.commit()
+
+    return redirect(url_for('manage_shipping_types'))

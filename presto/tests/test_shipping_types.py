@@ -102,10 +102,10 @@ class TestShippingTypesTestCase(BaseTestCase):
             encoding='utf_8'), response.get_data())
 
     def test_edit_shipping_types_duplicate(self):
-        item = ShippingType.query.first()
+        item = ShippingType.query.filter_by(id=2).first()
         count_shipping_types_before_post = ShippingType.query.count()
 
-        response = self.client.post('/admin/shipping/types/add',
+        response = self.client.post('/admin/shipping/types/edit/1',
                                     data={'name': item.name},
                                     follow_redirects=True)
 
@@ -125,5 +125,23 @@ class TestShippingTypesTestCase(BaseTestCase):
         response = self.client.post('/admin/shipping/types/edit/1234',
                          data={'name': 'Paczkomat123'},
                          follow_redirects=True)
+
+        self.assertStatus(response, 404)
+
+    def test_delete_shipping_type(self):
+        item = ShippingType.query.first()
+        count_shipping_types_before_post = ShippingType.query.count()
+
+        response = self.client.get('/admin/shipping/types/delete/' + str(item.id))
+
+        count_shipping_types_after_post = ShippingType.query.count()
+
+        self.assertEqual(count_shipping_types_before_post,
+                         count_shipping_types_after_post + 1)
+
+        self.assertIsNone(ShippingType.query.filter_by(id=item.id).first())
+
+    def test_delete_not_existing_shipping_type(self):
+        response = self.client.get('/admin/shipping/types/delete/1234')
 
         self.assertStatus(response, 404)
