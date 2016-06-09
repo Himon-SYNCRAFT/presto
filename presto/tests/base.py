@@ -36,6 +36,12 @@ class BaseTestCase(TestCase):
         db_session.add(shipping_type1)
         db_session.add(shipping_type2)
 
+        auction_type1 = models.AuctionType('sklepowa')
+        auction_type2 = models.AuctionType('zwykła')
+
+        db_session.add(auction_type1)
+        db_session.add(auction_type2)
+
         db_session.commit()
 
     def tearDown(self):

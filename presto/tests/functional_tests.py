@@ -216,8 +216,6 @@ class ShippingTypeTestCase(LiveServerTestCase):
         table = self.browser.find_element_by_id('shipping-types-list')
         anchors = table.find_elements_by_tag_name('a')
 
-        print([item.get_attribute('href') for item in anchors])
-
         self.assertTrue(any([item.get_attribute('href').startswith(
             self.live_server_url + '/admin/shipping/types/delete') for item in anchors]))
 
@@ -297,3 +295,83 @@ class ShippingTypeTestCase(LiveServerTestCase):
         td = table.find_elements_by_tag_name('td')
 
         self.assertNotIn(shipping_type.name, [t.text for t in td])
+
+
+class AuctionTypeTestCase(LiveServerTestCase):
+
+    def create_app(self):
+        app.config.from_object('presto.settings.TestConfig')
+        self.live_server_url = 'http://localhost:' + \
+            str(app.config['LIVESERVER_PORT'])
+        self.test_engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+        db_session.configure(bind=self.test_engine)
+
+        return app
+
+    def setUp(self):
+        Base.metadata.create_all(self.test_engine)
+
+        user = models.User('danzaw', 'danzaw@mail.pl', "it's a secret")
+        user2 = models.User('himon', 'himon@mail.pl', "it's a secret")
+
+        db_session.add(user)
+        db_session.add(user2)
+        db_session.commit()
+
+        account = models.Account('danzaw', 'danzaw@gmail.com',
+                                 "it's a secret", 'webapi_key')
+
+        db_session.add(account)
+        db_session.commit()
+
+        shipping_type1 = models.ShippingType('Kurier', False)
+        shipping_type2 = models.ShippingType('Odbiór osobisty', True)
+
+        db_session.add(shipping_type1)
+        db_session.add(shipping_type2)
+
+        auction_type1 = models.AuctionType('sklepowa')
+        auction_type2 = models.AuctionType('zwykła')
+
+        db_session.add(auction_type1)
+        db_session.add(auction_type2)
+
+        db_session.commit()
+
+        self.browser = webdriver.Firefox()
+        self.browser.implicitly_wait(3)
+
+    def tearDown(self):
+        db_session.remove()
+        Base.metadata.reflect(self.test_engine)
+        Base.metadata.drop_all(self.test_engine)
+
+        self.browser.quit()
+
+    def test_auction_type_page_exist(self):
+        self.browser.get('/admin/auction/types')
+
+        table = self.browser.find_element_by_id('auction-types-list')
+
+        anchors = table.find_elements_by_tag_name('a')
+
+        self.assertTrue(any([item.get_attribute('href').startswith(
+            self.live_server_url + '/admin/auction/types/delete') for item in anchors]))
+
+        self.assertTrue(any([item.get_attribute('href').startswith(
+            self.live_server_url + '/admin/auction/types/edit') for item in anchors]))
+
+        anchors = self.browser.find_elements_by_tag_name('a')
+
+        self.assertTrue(any([(item.get_attribute('href') ==
+                              self.live_server_url + '/admin/auction/types/add') for item in anchors]))
+
+
+    def test_add_auction_type(self):
+        pass
+
+    def test_edit_auction_type(self):
+        pass
+
+    def test_delete_auction_type(self):
+        pass

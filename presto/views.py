@@ -2,7 +2,7 @@ from flask import redirect, render_template, request, url_for
 from presto import app
 from presto.database import db_session
 from presto.forms import UserForm, EditUserForm, ShippingTypesForm
-from presto.models import User, ShippingType
+from presto.models import User, ShippingType, AuctionType
 from sqlalchemy.exc import IntegrityError
 
 
@@ -132,3 +132,9 @@ def delete_shipping_type(shipping_type_id):
     db_session.commit()
 
     return redirect(url_for('manage_shipping_types'))
+
+@app.route('/admin/auction/types')
+def manage_auction_types():
+    auction_types = AuctionType.query.all()
+
+    return render_template('auction_types.html', auction_types=enumerate(auction_types, 1))

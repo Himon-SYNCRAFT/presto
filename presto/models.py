@@ -125,7 +125,8 @@ class ShippingType(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(128), nullable=False, unique=True)
-    is_boolean = Column(Boolean, nullable=False, default=False) # odbiory osobiste itp jako checkboxy
+    # odbiory osobiste itp jako checkboxy
+    is_boolean = Column(Boolean, nullable=False, default=False)
 
     def __init__(self, name, is_boolean):
         self.name = name
@@ -192,6 +193,9 @@ class AuctionType(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(128))
+
+    def __init__(self, name):
+        self.name = name
 
 
 class AuctionDuration(Base):
