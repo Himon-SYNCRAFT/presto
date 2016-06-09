@@ -6,7 +6,6 @@ from presto import app, models
 from presto.tests.base import BaseTestCase
 from presto.database import db_session, Base
 from sqlalchemy import create_engine
-import unittest
 
 
 class UserManagementTest(LiveServerTestCase):
@@ -74,7 +73,7 @@ class UserManagementTest(LiveServerTestCase):
         # strone sie przeladowuje i znowu pokazuje liste uzytkownikow rozszerzona
         # o tego ktorego wprowadzilem
 
-        response = self.browser.get(self.live_server_url + '/admin/users')
+        self.browser.get(self.live_server_url + '/admin/users')
 
         new_user_button = self.browser.find_element_by_id('add-user')
         new_user_button.click()
@@ -102,7 +101,7 @@ class UserManagementTest(LiveServerTestCase):
         self.assertNotIn('pass123456', [item.text for item in td])
 
     def test_edit_user(self):
-        response = self.browser.get(self.live_server_url + '/admin/users')
+        self.browser.get(self.live_server_url + '/admin/users')
         user = models.User.query.first()
 
         td = self.browser.find_element_by_id(
@@ -146,7 +145,7 @@ class UserManagementTest(LiveServerTestCase):
         # Lista uzytkownikow sie przeladowuje
         # Nie ma juz na liscie uzytkownika, ktorego usunalem
 
-        response = self.browser.get(self.live_server_url + '/admin/users')
+        self.browser.get(self.live_server_url + '/admin/users')
         user = models.User.query.first()
 
         td = self.browser.find_element_by_id(
@@ -259,7 +258,6 @@ class ShippingTypeTestCase(LiveServerTestCase):
         self.browser.get(self.live_server_url + '/admin/shipping/types')
 
         table = self.browser.find_element_by_id('shipping-types-list')
-        anchors = table.find_elements_by_tag_name('a')
 
         edit_url = '/admin/shipping/types/edit/' + str(shipping_type.id)
         edit_button_xpath = "//a[@href='{}']".format(edit_url)
@@ -282,5 +280,20 @@ class ShippingTypeTestCase(LiveServerTestCase):
 
         self.assertIn('Paczkomat123', [t.text for t in td])
 
-    # def delete_shipping_type(self):
-    #     pass
+    def delete_shipping_type(self):
+        shipping_type = models.ShippingType.query.first()
+
+        self.browser.get(self.live_server_url + '/admin/shipping/types')
+
+        table = self.browser.find_element_by_id('shipping-types-list')
+
+        url = '/admin/shipping/types/delete/' + str(shipping_type.id)
+        button_xpath = "//a[@href='{}']".format(url)
+        button = table.find_element_by_xpath(button_xpath)
+
+        button.click()
+
+        table = self.browser.find_element_by_id('shipping-types-list')
+        td = table.find_elements_by_tag_name('td')
+
+        self.assertNotIn(shipping_type.name, [t.text for t in td])

@@ -1,6 +1,6 @@
 import unittest
 
-from flask.ext.script import Manager
+from flask.ext.script import Manager, Command, Option
 from presto import app, models
 from presto.database import Base, db_session
 from presto.tests import functional_tests
@@ -25,8 +25,27 @@ def func_tests(case_name=None):
     if case_name is None:
         tests = unittest.TestLoader().loadTestsFromModule(functional_tests)
     else:
-        tests = unittest.TestLoader().loadTestsFromName('presto.tests.functional_tests.' + case_name)
+        tests = unittest.TestLoader().loadTestsFromName(
+            'presto.tests.functional_tests.' + case_name)
     unittest.TextTestRunner(verbosity=2).run(tests)
+
+
+@manager.add_command
+class CommandWithCatchAll(Command):
+    """Runs the tests
+
+    Examples:
+    python manage.py tests test_pyfile
+    python manage.py tests test_pyfile TestCaseName
+    python manage.py tests test_pyfile TestCaseName test_method"""
+
+    capture_all_args = True
+    name = 'tests'
+
+    def run(self, remaining_args):
+        tests_path = '.'.join(remaining_args)
+        tests = unittest.TestLoader().loadTestsFromName('presto.tests.' + tests_path)
+        unittest.TextTestRunner(verbosity=2).run(tests)
 
 
 @manager.command

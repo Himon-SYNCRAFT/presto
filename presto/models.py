@@ -3,7 +3,6 @@ from presto.database import Base, db_session
 from sqlalchemy import Column, Integer, String, Binary, CHAR, ForeignKey, Float, \
     Boolean, Table, Numeric, Text, DateTime
 from sqlalchemy.orm import relationship
-from sqlalchemy.exc import IntegrityError
 from hashlib import sha256
 from base64 import b64encode
 

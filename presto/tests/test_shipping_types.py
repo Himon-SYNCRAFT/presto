@@ -1,6 +1,3 @@
-import unittest
-
-from presto.database import db_session
 from presto.models import ShippingType
 from presto.tests.base import BaseTestCase
 
@@ -43,7 +40,6 @@ class TestShippingTypesTestCase(BaseTestCase):
                          count_shipping_types_after_post)
 
     def test_add_duplicate_shipping_type(self):
-        shipping_types = ShippingType.query.all()
         count_shipping_types_before_post = ShippingType.query.count()
 
         self.client.post('/admin/shipping/types/add',
@@ -75,7 +71,7 @@ class TestShippingTypesTestCase(BaseTestCase):
         new_is_boolen = True
 
         self.client.post(
-            '/admin/shipping/types/edit/'+ str(item.id),
+            '/admin/shipping/types/edit/' + str(item.id),
             data={'name': new_name, 'is_boolean': new_is_boolen}
         )
 
@@ -89,8 +85,8 @@ class TestShippingTypesTestCase(BaseTestCase):
         count_shipping_types_before_post = ShippingType.query.count()
 
         response = self.client.post(
-            '/admin/shipping/types/edit/'+ str(item.id),
-             data={'name': None, 'is_boolean': None},
+            '/admin/shipping/types/edit/' + str(item.id),
+            data={'name': None, 'is_boolean': None},
         )
 
         count_shipping_types_after_post = ShippingType.query.count()
@@ -123,8 +119,8 @@ class TestShippingTypesTestCase(BaseTestCase):
         self.assertStatus(response, 404)
 
         response = self.client.post('/admin/shipping/types/edit/1234',
-                         data={'name': 'Paczkomat123'},
-                         follow_redirects=True)
+                                    data={'name': 'Paczkomat123'},
+                                    follow_redirects=True)
 
         self.assertStatus(response, 404)
 
@@ -132,7 +128,7 @@ class TestShippingTypesTestCase(BaseTestCase):
         item = ShippingType.query.first()
         count_shipping_types_before_post = ShippingType.query.count()
 
-        response = self.client.get('/admin/shipping/types/delete/' + str(item.id))
+        self.client.get('/admin/shipping/types/delete/' + str(item.id))
 
         count_shipping_types_after_post = ShippingType.query.count()
 
