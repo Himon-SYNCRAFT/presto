@@ -11,7 +11,7 @@ class TestConfig(BaseConfig):
     TESTING = True
     WTF_CSRF_ENABLED = False
     SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
-    LIVESERVER_PORT = 8942
+    LIVESERVER_PORT = 8943
     SERVER_NAME  = 'localhost:' + str(LIVESERVER_PORT)
 
 

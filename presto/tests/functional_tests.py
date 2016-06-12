@@ -1,9 +1,7 @@
-from flask import Flask
 from flask.ext.testing import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from presto import app, models
-from presto.tests.base import BaseTestCase
 from presto.database import db_session, Base
 from sqlalchemy import create_engine
 
@@ -15,6 +13,7 @@ class UserManagementTest(LiveServerTestCase):
         self.live_server_url = 'http://localhost:' + \
             str(app.config['LIVESERVER_PORT'])
         self.test_engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+        db_session.remove()
         db_session.configure(bind=self.test_engine)
 
         return app
@@ -35,7 +34,7 @@ class UserManagementTest(LiveServerTestCase):
         db_session.add(account)
         db_session.commit()
 
-        self.browser = webdriver.Firefox()
+        self.browser = webdriver.Chrome()
         self.browser.implicitly_wait(3)
 
     def tearDown(self):
@@ -172,6 +171,7 @@ class ShippingTypeTestCase(LiveServerTestCase):
         self.live_server_url = 'http://localhost:' + \
             str(app.config['LIVESERVER_PORT'])
         self.test_engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+        db_session.remove()
         db_session.configure(bind=self.test_engine)
 
         return app
@@ -200,7 +200,7 @@ class ShippingTypeTestCase(LiveServerTestCase):
 
         db_session.commit()
 
-        self.browser = webdriver.Firefox()
+        self.browser = webdriver.Chrome()
         self.browser.implicitly_wait(3)
 
     def tearDown(self):
@@ -304,6 +304,7 @@ class AuctionTypeTestCase(LiveServerTestCase):
         self.live_server_url = 'http://localhost:' + \
             str(app.config['LIVESERVER_PORT'])
         self.test_engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+        db_session.remove()
         db_session.configure(bind=self.test_engine)
 
         return app
@@ -338,7 +339,7 @@ class AuctionTypeTestCase(LiveServerTestCase):
 
         db_session.commit()
 
-        self.browser = webdriver.Firefox()
+        self.browser = webdriver.Chrome()
         self.browser.implicitly_wait(3)
 
     def tearDown(self):
@@ -349,7 +350,7 @@ class AuctionTypeTestCase(LiveServerTestCase):
         self.browser.quit()
 
     def test_auction_type_page_exist(self):
-        self.browser.get('/admin/auction/types')
+        self.browser.get(self.live_server_url + '/admin/auction/types')
 
         table = self.browser.find_element_by_id('auction-types-list')
 
@@ -366,12 +367,26 @@ class AuctionTypeTestCase(LiveServerTestCase):
         self.assertTrue(any([(item.get_attribute('href') ==
                               self.live_server_url + '/admin/auction/types/add') for item in anchors]))
 
-
-    def test_add_auction_type(self):
-        pass
-
-    def test_edit_auction_type(self):
-        pass
-
-    def test_delete_auction_type(self):
-        pass
+    # def test_add_auction_type(self):
+    #     self.browser.get('/admin/auction/types')
+    #
+    #     td = self.browser.find_elements_by_tag_name('td')
+    #     self.assertNotIn('niezwykła', [item.text for item in td])
+    #
+    #     add_button = self.browser.find_element_by_id('add-auction-type')
+    #     add_button.click()
+    #
+    #     name_input = self.browser.find_element_by_name('name')
+    #     name_input.send_keys('niezwykła')
+    #
+    #     submit_button = self.browser.find_element_by_name('submit')
+    #     submit_button.click()
+    #
+    #     td = self.browser.find_elements_by_tag_name('td')
+    #     self.assertIn('niezwykła', [item.text for item in td])
+    #
+    # def test_edit_auction_type(self):
+    #     pass
+    #
+    # def test_delete_auction_type(self):
+    #     pass
