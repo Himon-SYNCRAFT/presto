@@ -1,19 +1,19 @@
-from flask.ext.testing import TestCase
+from flask.ext.testing import TestCase, LiveServerTestCase
 from presto import app, models
 from presto.database import db_session, Base
 from sqlalchemy import create_engine
+from selenium import webdriver
 
 
 class BaseTestCase(TestCase):
 
     def create_app(self):
         app.config.from_object('presto.settings.TestConfig')
+        self.test_engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
         return app
 
     def setUp(self):
-
-        self.test_engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
-
+        db_session.remove()
         db_session.configure(bind=self.test_engine)
         Base.metadata.create_all(self.test_engine)
 
@@ -47,3 +47,29 @@ class BaseTestCase(TestCase):
     def tearDown(self):
         db_session.remove()
         Base.metadata.drop_all(self.test_engine)
+
+
+class LiveServerBaseTestCase(LiveServerTestCase, BaseTestCase):
+
+    def create_app(self):
+        app.config.from_object('presto.settings.TestConfig')
+        self.live_server_url = 'http://localhost:' + \
+            str(app.config['LIVESERVER_PORT'])
+        self.test_engine = create_engine(
+            app.config['SQLALCHEMY_DATABASE_URI2'])
+        db_session.remove()
+        db_session.configure(bind=self.test_engine)
+
+        return app
+
+    def setUp(self):
+        super().setUp()
+        self.browser = webdriver.Chrome()
+        self.browser.implicitly_wait(3)
+
+    def tearDown(self):
+        db_session.remove()
+        Base.metadata.reflect(self.test_engine)
+        Base.metadata.drop_all(self.test_engine)
+
+        self.browser.quit()

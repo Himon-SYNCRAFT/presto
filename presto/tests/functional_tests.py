@@ -1,48 +1,13 @@
 from flask.ext.testing import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from sqlalchemy import create_engine
 from presto import app, models
 from presto.database import db_session, Base
-from sqlalchemy import create_engine
+from presto.tests.base import LiveServerBaseTestCase
 
 
-class UserManagementTest(LiveServerTestCase):
-
-    def create_app(self):
-        app.config.from_object('presto.settings.TestConfig')
-        self.live_server_url = 'http://localhost:' + \
-            str(app.config['LIVESERVER_PORT'])
-        self.test_engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
-        db_session.remove()
-        db_session.configure(bind=self.test_engine)
-
-        return app
-
-    def setUp(self):
-        Base.metadata.create_all(self.test_engine)
-
-        user = models.User('danzaw', 'danzaw@mail.pl', "it's a secret")
-        user2 = models.User('himon', 'himon@mail.pl', "it's a secret")
-
-        db_session.add(user)
-        db_session.add(user2)
-        db_session.commit()
-
-        account = models.Account('danzaw', 'danzaw@gmail.com',
-                                 "it's a secret", 'webapi_key')
-
-        db_session.add(account)
-        db_session.commit()
-
-        self.browser = webdriver.Chrome()
-        self.browser.implicitly_wait(3)
-
-    def tearDown(self):
-        db_session.remove()
-        Base.metadata.reflect(self.test_engine)
-        Base.metadata.drop_all(self.test_engine)
-
-        self.browser.quit()
+class UserManagementTest(LiveServerBaseTestCase):
 
     def test_user_management_page(self):
         # Przechodze do panelu zarzadzania uzytkownikami
@@ -164,51 +129,7 @@ class UserManagementTest(LiveServerTestCase):
         self.assertNotIn(user.login, [item.text for item in td])
 
 
-class ShippingTypeTestCase(LiveServerTestCase):
-
-    def create_app(self):
-        app.config.from_object('presto.settings.TestConfig')
-        self.live_server_url = 'http://localhost:' + \
-            str(app.config['LIVESERVER_PORT'])
-        self.test_engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
-        db_session.remove()
-        db_session.configure(bind=self.test_engine)
-
-        return app
-
-    def setUp(self):
-        Base.metadata.create_all(self.test_engine)
-
-        user = models.User('danzaw', 'danzaw@mail.pl', "it's a secret")
-        user2 = models.User('himon', 'himon@mail.pl', "it's a secret")
-
-        db_session.add(user)
-        db_session.add(user2)
-        db_session.commit()
-
-        account = models.Account('danzaw', 'danzaw@gmail.com',
-                                 "it's a secret", 'webapi_key')
-
-        db_session.add(account)
-        db_session.commit()
-
-        shipping_type1 = models.ShippingType('Kurier', False)
-        shipping_type2 = models.ShippingType('Odbiór osobisty', True)
-
-        db_session.add(shipping_type1)
-        db_session.add(shipping_type2)
-
-        db_session.commit()
-
-        self.browser = webdriver.Chrome()
-        self.browser.implicitly_wait(3)
-
-    def tearDown(self):
-        db_session.remove()
-        Base.metadata.reflect(self.test_engine)
-        Base.metadata.drop_all(self.test_engine)
-
-        self.browser.quit()
+class ShippingTypeTestCase(LiveServerBaseTestCase):
 
     def test_shipping_type_management(self):
         self.browser.get(self.live_server_url + '/admin/shipping/types')
@@ -297,57 +218,7 @@ class ShippingTypeTestCase(LiveServerTestCase):
         self.assertNotIn(shipping_type.name, [t.text for t in td])
 
 
-class AuctionTypeTestCase(LiveServerTestCase):
-
-    def create_app(self):
-        app.config.from_object('presto.settings.TestConfig')
-        self.live_server_url = 'http://localhost:' + \
-            str(app.config['LIVESERVER_PORT'])
-        self.test_engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
-        db_session.remove()
-        db_session.configure(bind=self.test_engine)
-
-        return app
-
-    def setUp(self):
-        Base.metadata.create_all(self.test_engine)
-
-        user = models.User('danzaw', 'danzaw@mail.pl', "it's a secret")
-        user2 = models.User('himon', 'himon@mail.pl', "it's a secret")
-
-        db_session.add(user)
-        db_session.add(user2)
-        db_session.commit()
-
-        account = models.Account('danzaw', 'danzaw@gmail.com',
-                                 "it's a secret", 'webapi_key')
-
-        db_session.add(account)
-        db_session.commit()
-
-        shipping_type1 = models.ShippingType('Kurier', False)
-        shipping_type2 = models.ShippingType('Odbiór osobisty', True)
-
-        db_session.add(shipping_type1)
-        db_session.add(shipping_type2)
-
-        auction_type1 = models.AuctionType('sklepowa')
-        auction_type2 = models.AuctionType('zwykła')
-
-        db_session.add(auction_type1)
-        db_session.add(auction_type2)
-
-        db_session.commit()
-
-        self.browser = webdriver.Chrome()
-        self.browser.implicitly_wait(3)
-
-    def tearDown(self):
-        db_session.remove()
-        Base.metadata.reflect(self.test_engine)
-        Base.metadata.drop_all(self.test_engine)
-
-        self.browser.quit()
+class AuctionTypeTestCase(LiveServerBaseTestCase):
 
     def test_auction_type_page_exist(self):
         self.browser.get(self.live_server_url + '/admin/auction/types')
