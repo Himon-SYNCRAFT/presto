@@ -1,5 +1,7 @@
 import unittest
-
+import os
+import signal
+import subprocess
 from flask.ext.script import Manager, Command, Option
 from presto import app, models
 from presto.database import Base, db_session
@@ -22,12 +24,17 @@ def test(case_name=None):
 @manager.command
 def func_tests(case_name=None):
     """Runs the functional tests with Selenium"""
+    pro = subprocess.Popen('chromedriver --port=9515', stdout=subprocess.PIPE,
+                           shell=True, preexec_fn=os.setsid)
+
     if case_name is None:
         tests = unittest.TestLoader().loadTestsFromModule(functional_tests)
     else:
         tests = unittest.TestLoader().loadTestsFromName(
             'presto.tests.functional_tests.' + case_name)
     unittest.TextTestRunner(verbosity=2).run(tests)
+
+    os.killpg(os.getpgid(pro.pid), signal.SIGTERM)
 
 
 @manager.add_command

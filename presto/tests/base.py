@@ -3,6 +3,8 @@ from presto import app, models
 from presto.database import db_session, Base
 from sqlalchemy import create_engine
 from selenium import webdriver
+from selenium.webdriver.chrome import service
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 
 class BaseTestCase(TestCase):
@@ -63,9 +65,18 @@ class LiveServerBaseTestCase(LiveServerTestCase, BaseTestCase):
         return app
 
     def setUp(self):
-        super().setUp()
-        self.browser = webdriver.Chrome()
+        capabilities = DesiredCapabilities.CHROME
+        command_executor='http://127.0.0.1:9515'
+        self.browser = webdriver.Remote(command_executor, capabilities)
+        # self.browser = webdriver.Chrome()
         self.browser.implicitly_wait(3)
+
+        self.addCleanup(db_session.remove)
+        self.addCleanup(Base.metadata.reflect, self.test_engine)
+        self.addCleanup(Base.metadata.drop_all, self.test_engine)
+        self.addCleanup(self.browser.quit)
+
+        super().setUp()
 
     def tearDown(self):
         db_session.remove()

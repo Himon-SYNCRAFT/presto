@@ -238,26 +238,26 @@ class AuctionTypeTestCase(LiveServerBaseTestCase):
         self.assertTrue(any([(item.get_attribute('href') ==
                               self.live_server_url + '/admin/auction/types/add') for item in anchors]))
 
-    # def test_add_auction_type(self):
-    #     self.browser.get('/admin/auction/types')
-    #
-    #     td = self.browser.find_elements_by_tag_name('td')
-    #     self.assertNotIn('niezwykła', [item.text for item in td])
-    #
-    #     add_button = self.browser.find_element_by_id('add-auction-type')
-    #     add_button.click()
-    #
-    #     name_input = self.browser.find_element_by_name('name')
-    #     name_input.send_keys('niezwykła')
-    #
-    #     submit_button = self.browser.find_element_by_name('submit')
-    #     submit_button.click()
-    #
-    #     td = self.browser.find_elements_by_tag_name('td')
-    #     self.assertIn('niezwykła', [item.text for item in td])
-    #
-    # def test_edit_auction_type(self):
-    #     pass
-    #
-    # def test_delete_auction_type(self):
-    #     pass
+    def test_add_auction_type(self):
+        self.browser.get(self.live_server_url + '/admin/auction/types')
+
+        td = self.browser.find_elements_by_tag_name('td')
+        self.assertNotIn('niezwykła', [item.text for item in td])
+
+        add_button = self.browser.find_element_by_id('add-auction-type')
+        add_button.click()
+
+        name_input = self.browser.find_element_by_name('name')
+        name_input.send_keys('niezwykła')
+
+        submit_button = self.browser.find_element_by_name('submit')
+        submit_button.click()
+
+        td = self.browser.find_elements_by_tag_name('td')
+        self.assertIn('niezwykła', [item.text for item in td])
+
+    def test_edit_auction_type(self):
+        pass
+
+    def test_delete_auction_type(self):
+        pass
