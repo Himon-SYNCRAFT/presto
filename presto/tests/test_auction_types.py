@@ -13,7 +13,19 @@ class TestAuctionTypesTestCase(BaseTestCase):
         self.assertIn(b'href="/admin/auction/types/delete', response.data)
 
     def test_add_auction_type(self):
-        pass
+        count_before_post = AuctionType.query.count()
+
+        self.client.post('/admin/auction/types/add',
+                         data={'name': 'niezwykla'},
+                         follow_redirects=True)
+
+        count_after_post = AuctionType.query.count()
+
+        self.assertEqual(count_before_post + 1,
+                         count_after_post)
+
+        AuctionType.query.filter_by(
+            name='niezwykla', is_boolean=False).one()
 
     def test_add_auction_type_invalid_data(self):
         pass
