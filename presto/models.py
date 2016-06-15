@@ -192,7 +192,7 @@ class AuctionType(Base):
     __tablename__ = 'auction_type'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(128))
+    name = Column(String(128), unique=True, nullable=False)
 
     def __init__(self, name):
         self.name = name

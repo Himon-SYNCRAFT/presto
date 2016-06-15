@@ -187,6 +187,7 @@ class ShippingTypeTestCase(LiveServerBaseTestCase):
         name_input = self.browser.find_element_by_name('name')
         is_boolean_input = self.browser.find_element_by_name('is_boolean')
 
+        name_input.clear()
         name_input.send_keys('Paczkomat123')
         is_boolean_input.click()
 
@@ -257,7 +258,44 @@ class AuctionTypeTestCase(LiveServerBaseTestCase):
         self.assertIn('niezwykła', [item.text for item in td])
 
     def test_edit_auction_type(self):
-        pass
+        auction_type = models.AuctionType.query.first()
+        self.browser.get(self.live_server_url + '/admin/auction/types')
+
+        table = self.browser.find_element_by_id('auction-types-list')
+
+        edit_url = '/admin/auction/types/edit/' + str(auction_type.id)
+        edit_button_xpath = "//a[@href='{}']".format(edit_url)
+        edit_button = table.find_element_by_xpath(edit_button_xpath)
+
+        edit_button.click()
+
+        name_input = self.browser.find_element_by_name('name')
+
+        name_input.clear()
+        name_input.send_keys('niezywkła')
+
+        save_button = self.browser.find_element_by_name('submit')
+
+        save_button.click()
+
+        table = self.browser.find_element_by_id('auction-types-list')
+        td = table.find_elements_by_tag_name('td')
+
+        self.assertIn('niezywkła', [t.text for t in td])
 
     def test_delete_auction_type(self):
-        pass
+        auction_type = models.AuctionType.query.first()
+        self.browser.get(self.live_server_url + '/admin/auction/types')
+
+        table = self.browser.find_element_by_id('auction-types-list')
+
+        url = '/admin/auction/types/delete/' + str(auction_type.id)
+        button_xpath = "//a[@href='{}']".format(url)
+        button = table.find_element_by_xpath(button_xpath)
+
+        button.click()
+
+        table = self.browser.find_element_by_id('auction-types-list')
+        td = table.find_elements_by_tag_name('td')
+
+        self.assertNotIn(auction_type.name, [t.text for t in td])

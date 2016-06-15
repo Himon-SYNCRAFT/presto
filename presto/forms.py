@@ -39,8 +39,17 @@ class ShippingTypesForm(Form):
     name = StringField(
         'Nazwa',
         [InputRequired('Pole nazwa jest wymagane'),
-         Length(max=128, message='Nazwa musi mieć min max 128')]
+         Length(max=128, message='Nazwa musi mieć max 128 znaków')]
     )
 
     is_boolean = BooleanField('Wartość boolowska')
+    submit = SubmitField('Zapisz')
+
+class AuctionTypesForm(Form):
+    name = StringField(
+        'Nazwa',
+        [InputRequired('Pole nazwa jest wymagane'),
+         Length(max=128, message='Nazwa musi mieć max 128 znaków')]
+    )
+
     submit = SubmitField('Zapisz')

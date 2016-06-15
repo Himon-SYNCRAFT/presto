@@ -1,7 +1,7 @@
 from flask import redirect, render_template, request, url_for
 from presto import app
 from presto.database import db_session
-from presto.forms import UserForm, EditUserForm, ShippingTypesForm
+from presto.forms import UserForm, EditUserForm, ShippingTypesForm, AuctionTypesForm
 from presto.models import User, ShippingType, AuctionType
 from sqlalchemy.exc import IntegrityError
 
@@ -133,8 +133,63 @@ def delete_shipping_type(shipping_type_id):
 
     return redirect(url_for('manage_shipping_types'))
 
+
 @app.route('/admin/auction/types')
 def manage_auction_types():
     auction_types = AuctionType.query.all()
 
     return render_template('auction_types.html', auction_types=enumerate(auction_types, 1))
+
+
+@app.route('/admin/auction/types/add', methods=['GET', 'POST'])
+def add_auction_type():
+    form = AuctionTypesForm(request.form)
+
+    if request.method == 'POST' and form.validate():
+        auction_type = AuctionType(name=form.name.data)
+        db_session.add(auction_type)
+
+        try:
+            db_session.commit()
+            return redirect(url_for('manage_auction_types'))
+        except IntegrityError:
+            db_session.rollback()
+            form.name.errors.append('Nazwa jest już zajęta')
+
+    return render_template('auction_types_add.html', form=form)
+
+
+@app.route('/admin/auction/types/edit/<int:auction_type_id>', methods=['GET', 'POST'])
+def edit_auction_type(auction_type_id):
+    auction_type = AuctionType.query.filter_by(id=auction_type_id).first()
+
+    if auction_type is None:
+        return render_template('errors/404.html'), 404
+
+    form = AuctionTypesForm(request.form)
+
+    if request.method == 'POST' and form.validate():
+        auction_type.name = form.name.data
+        db_session.add(auction_type)
+
+        try:
+            db_session.commit()
+            return redirect(url_for('manage_auction_types'))
+        except IntegrityError:
+            db_session.rollback()
+            form.name.errors.append('Nazwa jest już zajęta')
+
+    return render_template('auction_types_edit.html', form=form, auction_type=auction_type)
+
+
+@app.route('/admin/auction/types/delete/<int:auction_type_id>', methods=['GET'])
+def delete_auction_type(auction_type_id):
+    auction_type = AuctionType.query.filter_by(id=auction_type_id).first()
+
+    if auction_type is None:
+        return render_template('errors/404.html'), 404
+
+    db_session.delete(auction_type)
+    db_session.commit()
+
+    return redirect(url_for('manage_auction_types'))
