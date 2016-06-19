@@ -14,17 +14,35 @@ class User(Base):
     login = Column(String(128), unique=True, nullable=False)
     mail = Column(String(256), unique=True, nullable=False)
     password_hash = Column(Binary(60), nullable=False)
+    role_id = Column(Integer, ForeignKey('role.id'), nullable=False)
 
-    def __init__(self, login, mail, password):
+    role = relationship('Role', back_populates='users', lazy=False, innerjoin=True)
+
+    def __init__(self, login, mail, password, role_id=None):
         self.login = login
         self.mail = mail
         self.generate_password_hash(password)
+
+        if role_id is not None:
+            self.role_id = role_id
 
     def generate_password_hash(self, password):
         self.password_hash = bcrypt.generate_password_hash(password)
 
     def check_password_hash(self, password):
         return bcrypt.check_password_hash(self.password_hash, password)
+
+
+class Role(Base):
+    __tablename__ = 'role'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(128), nullable=False, unique=True)
+
+    users = relationship('User', back_populates='role')
+
+    def __init__(self, name):
+        self.name = name
 
 
 class Account(Base):

@@ -1,5 +1,5 @@
 from wtforms import Form, StringField, PasswordField, SubmitField, \
-    BooleanField
+    BooleanField, SelectField
 from wtforms.validators import InputRequired, Length, Email
 
 
@@ -15,6 +15,9 @@ class UserForm(Form):
         [InputRequired(message='Pole mail jest polem wymaganym'),
          Email(message='Niepoprawny format email')]
     )
+
+    role = SelectField('Rola', coerce=int, validators=[
+                       InputRequired(message='Pole rola jest polem wymaganym')])
 
     password = PasswordField('Hasło', [InputRequired(
         message='Pole hasło jest polem wymaganym')])
@@ -32,6 +35,10 @@ class EditUserForm(Form):
     mail = StringField(
         'Mail', [InputRequired(message='Pole mail jest polem wymaganym'),
                  Email(message='Niepoprawny format email')])
+
+    role = SelectField('Rola', coerce=int, validators=[
+                       InputRequired(message='Pole rola jest polem wymaganym')])
+    
     submit = SubmitField('Zapisz')
 
 
@@ -44,6 +51,7 @@ class ShippingTypesForm(Form):
 
     is_boolean = BooleanField('Wartość boolowska')
     submit = SubmitField('Zapisz')
+
 
 class AuctionTypesForm(Form):
     name = StringField(

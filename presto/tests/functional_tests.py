@@ -1,6 +1,7 @@
 from flask.ext.testing import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import Select
 from sqlalchemy import create_engine
 from presto import app, models
 from presto.database import db_session, Base
@@ -45,16 +46,19 @@ class UserManagementTest(LiveServerBaseTestCase):
         self.assertIn('name="login"', self.browser.page_source)
         self.assertIn('name="mail"', self.browser.page_source)
         self.assertIn('name="password"', self.browser.page_source)
+        self.assertIn('name="role"', self.browser.page_source)
         self.assertIn('name="submit"', self.browser.page_source)
 
         login_input = self.browser.find_element_by_name('login')
         mail_input = self.browser.find_element_by_name('mail')
         password_input = self.browser.find_element_by_name('password')
+        role_input = Select(self.browser.find_element_by_name('role'))
         submit = self.browser.find_element_by_name('submit')
 
         login_input.send_keys('user1234567')
         mail_input.send_keys('mail_input2@wp.pl')
         password_input.send_keys('pass123456')
+        role_input.select_by_visible_text('admin')
         submit.click()
 
         td = self.browser.find_element_by_id(
@@ -62,6 +66,7 @@ class UserManagementTest(LiveServerBaseTestCase):
 
         self.assertIn('user1234567', [item.text for item in td])
         self.assertIn('mail_input2@wp.pl', [item.text for item in td])
+        self.assertIn('admin', [item.text for item in td])
         self.assertNotIn('pass123456', [item.text for item in td])
 
     def test_edit_user(self):
@@ -82,6 +87,7 @@ class UserManagementTest(LiveServerBaseTestCase):
 
         login_input = self.browser.find_element_by_name('login')
         mail_input = self.browser.find_element_by_name('mail')
+        role_input = Select(self.browser.find_element_by_name('role'))
         submit = self.browser.find_element_by_name('submit')
 
         self.assertEqual(login_input.get_attribute('value'), user.login)
@@ -92,6 +98,7 @@ class UserManagementTest(LiveServerBaseTestCase):
 
         login_input.send_keys('user7654321')
         mail_input.send_keys('mail_input99@wp.pl')
+        role_input.select_by_visible_text('admin')
         submit.click()
 
         td = self.browser.find_element_by_id(
@@ -99,6 +106,7 @@ class UserManagementTest(LiveServerBaseTestCase):
 
         self.assertIn('user7654321', [item.text for item in td])
         self.assertIn('mail_input99@wp.pl', [item.text for item in td])
+        self.assertIn('admin', [item.text for item in td])
 
     # def test_change_password(self):
     #     pass

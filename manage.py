@@ -67,8 +67,16 @@ def create_db():
     Base.metadata.drop_all()
     Base.metadata.create_all()
 
-    user = models.User('danzaw', 'danzaw@mail.pl', "it's a secret")
-    user2 = models.User('himon', 'himon@mail.pl', "it's a secret")
+    role1 = models.Role('admin')
+    role2 = models.Role('client')
+
+    db_session.add(role1)
+    db_session.add(role2)
+    db_session.commit()
+
+
+    user = models.User('danzaw', 'danzaw@mail.pl', "it's a secret", 1)
+    user2 = models.User('himon', 'himon@mail.pl', "it's a secret", 2)
 
     db_session.add(user)
     db_session.add(user2)

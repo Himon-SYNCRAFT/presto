@@ -5,6 +5,7 @@ from sqlalchemy import create_engine
 from selenium import webdriver
 from selenium.webdriver.chrome import service
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.support.ui import Select
 
 
 class BaseTestCase(TestCase):
@@ -19,8 +20,17 @@ class BaseTestCase(TestCase):
         db_session.configure(bind=self.test_engine)
         Base.metadata.create_all(self.test_engine)
 
-        user = models.User('danzaw', 'danzaw@mail.pl', "it's a secret")
-        user2 = models.User('himon', 'himon@mail.pl', "it's a secret")
+        role1 = models.Role('admin')
+        role2 = models.Role('client')
+
+        db_session.add(role1)
+        db_session.add(role2)
+        db_session.commit()
+
+        user = models.User('danzaw', 'danzaw@mail.pl',
+                           "it's a secret", role_id=role1.id)
+        user2 = models.User('himon', 'himon@mail.pl',
+                            "it's a secret", role_id=role2.id)
 
         db_session.add(user)
         db_session.add(user2)
@@ -66,7 +76,7 @@ class LiveServerBaseTestCase(LiveServerTestCase, BaseTestCase):
 
     def setUp(self):
         capabilities = DesiredCapabilities.CHROME
-        command_executor='http://127.0.0.1:9515'
+        command_executor = 'http://127.0.0.1:9515'
         self.browser = webdriver.Remote(command_executor, capabilities)
         # self.browser = webdriver.Chrome()
         self.browser.implicitly_wait(3)

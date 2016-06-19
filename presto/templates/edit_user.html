@@ -14,6 +14,10 @@
                 {% for error in form.mail.errors %}
                 <li>{{ form.mail.label }} {{ error }}</li>
                 {% endfor %}
+
+                {% for error in form.role.errors %}
+                <li>{{ form.role.label }} {{ error }}</li>
+                {% endfor %}
             </ul>
         </div>
         <div class="form-group">
@@ -22,6 +26,10 @@
 
         <div class="form-group">
             {{ form.mail.label }} {{ form.mail(class='form-control', value=user.mail) }}
+        </div>
+
+        <div class="form-group">
+            {{ form.role.label }} {{ form.role(class='form-control') }}
         </div>
 
         <div class="form-group">

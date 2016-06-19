@@ -1,8 +1,8 @@
 from flask import redirect, render_template, request, url_for
 from presto import app
 from presto.database import db_session
-from presto.forms import UserForm, EditUserForm, ShippingTypesForm, AuctionTypesForm
-from presto.models import User, ShippingType, AuctionType
+from presto.forms import UserForm, EditUserForm, ShippingTypesForm, AuctionTypesForm, Length
+from presto.models import User, ShippingType, AuctionType, Role
 from sqlalchemy.exc import IntegrityError
 
 
@@ -16,11 +16,13 @@ def manage_users():
 @app.route('/admin/users/add', methods=['POST', 'GET'])
 def add_user():
     form = UserForm(request.form)
+    form.role.choices = [(role.id, role.name) for role in Role.query.order_by('name')]
 
     if request.method == 'POST' and form.validate():
         user = User(login=form.login.data,
                     mail=form.mail.data,
-                    password=form.password.data)
+                    password=form.password.data,
+                    role_id=form.role.data)
 
         try:
             db_session.add(user)
@@ -54,6 +56,9 @@ def edit_user(user_id):
         return render_template('errors/404.html'), 404
 
     form = EditUserForm(request.form)
+    form.role.choices = [(role.id, role.name) for role in Role.query.order_by('name')]
+    form.role.default = user.role_id
+    form.process(request.form)
 
     if request.method == 'POST' and form.validate():
         user.login = form.login.data

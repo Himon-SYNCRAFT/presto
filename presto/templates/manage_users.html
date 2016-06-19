@@ -9,7 +9,7 @@
             <th>#</th>
             <th>Login</th>
             <th>Mail</th>
-            <th>Haslo</th>
+            <th>Rola</th>
             <th>Edycja</th>
             <th>Usuń</th>
         </tr>
@@ -20,7 +20,7 @@
             <td>{{ index }}</td>
             <td>{{ user.login }}</td>
             <td>{{ user.mail }}</td>
-            <td>***</td>
+            <td>{{ user.role.name }}</td>
             <td><a class="btn btn-primary" href="/admin/users/edit/{{ user.id }}"><span>Edytuj <i class="glyphicon glyphicon-edit"></i></span></a></td>
             <td><a class="btn btn-danger" href="/admin/users/delete/{{ user.id }}"><span>Usuń <i class="glyphicon glyphicon-remove"></i></span></a></td>
         </tr>

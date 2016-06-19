@@ -1,7 +1,7 @@
 import unittest
 
 from presto import app
-from presto.models import User
+from presto.models import User, Role
 from presto.tests.base import BaseTestCase
 
 
@@ -13,18 +13,29 @@ class TestUserManagement(BaseTestCase):
         self.assertIn(b'id="users-list"', response.data)
 
     def test_add_new_user_proper_data(self):
+        role = Role.query.filter_by(id=2).first()
         users_count_before_post = len(User.query.all())
 
         response = self.client.post(
             '/admin/users/add',
-            data=dict(login="admin123452345345",
+            data=dict(login="admin123452345345", role=role.id,
                       mail="mail123123@mail.pl", password="admin123123"),
             follow_redirects=True
         )
 
         users_count_after_post = len(User.query.all())
 
+        user = User.query.filter_by(login='admin123452345345').first()
+
+        self.assertIsNotNone(user)
+        self.assertEqual(user.mail, 'mail123123@mail.pl')
+        self.assertEqual(user.role_id, role.id)
+
         self.assertIn(b'id="users-list"', response.get_data())
+        self.assertIn(b'admin123452345345', response.get_data())
+        self.assertIn(b'mail123123@mail.pl', response.get_data())
+        self.assertIn(role.name.encode(encoding='utf-8'), response.get_data())
+
         self.assertEqual(users_count_after_post, users_count_before_post + 1)
 
     def test_add_new_user_with_invalid_data(self):
@@ -32,7 +43,7 @@ class TestUserManagement(BaseTestCase):
 
         response = self.client.post(
             '/admin/users/add',
-            data=dict(login="ad",
+            data=dict(login="ad", role=1,
                       mail="mail123123", password="admin123123"),
             follow_redirects=True
         )
@@ -49,7 +60,7 @@ class TestUserManagement(BaseTestCase):
 
         response = self.client.post(
             '/admin/users/add',
-            data=dict(login="",
+            data=dict(login="", role="",
                       mail="", password=""),
             follow_redirects=True
         )
@@ -65,6 +76,9 @@ class TestUserManagement(BaseTestCase):
         self.assertIn('Pole hasło jest polem wymaganym'.encode(
             encoding='utf_8'), response.get_data())
 
+        self.assertIn('Pole rola jest polem wymaganym'.encode(
+            encoding='utf_8'), response.get_data())
+
         self.assertEqual(users_count_after_post, users_count_before_post)
 
     def test_add_new_user_with_invalid_mail_format(self):
@@ -72,7 +86,7 @@ class TestUserManagement(BaseTestCase):
 
         response = self.client.post(
             '/admin/users/add',
-            data=dict(login="admin123452345345",
+            data=dict(login="admin123452345345", role=1,
                       mail="mail123123", password="admin123123"),
             follow_redirects=True
         )
@@ -90,7 +104,8 @@ class TestUserManagement(BaseTestCase):
 
         response = self.client.post(
             '/admin/users/add',
-            data=dict(login=user.login, mail=user.mail, password="admin123123"),
+            data=dict(login=user.login, mail=user.mail,
+                      password="admin123123", role=user.role_id),
             follow_redirects=True
         )
 
@@ -137,7 +152,7 @@ class TestUserManagement(BaseTestCase):
 
         response = self.client.post(
             '/admin/users/edit/' + str(user_id),
-            data=dict(login="admin123452345345",mail="mail123123@mail.pl"),
+            data=dict(login="admin123452345345", mail="mail123123@mail.pl", role=1),
             follow_redirects=True
         )
 
@@ -152,7 +167,7 @@ class TestUserManagement(BaseTestCase):
 
         response = self.client.post(
             '/admin/users/edit/' + str(user_id),
-            data=dict(login="ad",mail="mail123123"),
+            data=dict(login="ad", mail="mail123123"),
             follow_redirects=True
         )
 
@@ -176,7 +191,6 @@ class TestUserManagement(BaseTestCase):
         self.assertIn('Pole mail jest polem wymaganym'.encode(
             encoding='utf_8'), response.get_data())
 
-
     def test_edit_to_dupliacate_user(self):
         users = User.query.all()
 
@@ -185,7 +199,8 @@ class TestUserManagement(BaseTestCase):
 
         response = self.client.post(
             '/admin/users/edit/' + str(user1.id),
-            data=dict(login=user2.login, mail=user2.mail, password="admin123123"),
+            data=dict(login=user2.login, mail=user2.mail,
+                      password="admin123123", role=user2.role_id),
             follow_redirects=True
         )
 

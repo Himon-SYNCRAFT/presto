@@ -10,7 +10,7 @@ class TestConfig(BaseConfig):
     DEBUG = False # Switch to False because if true flask_testing LiveServerTestCase run twice for whatever reason...
     TESTING = True
     WTF_CSRF_ENABLED = False
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite://'
     SQLALCHEMY_DATABASE_URI2 = 'sqlite:///test2.db'
     LIVESERVER_PORT = 8943
     SERVER_NAME  = 'localhost:' + str(LIVESERVER_PORT)
