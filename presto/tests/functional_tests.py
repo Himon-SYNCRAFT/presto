@@ -307,3 +307,46 @@ class AuctionTypeTestCase(LiveServerBaseTestCase):
         td = table.find_elements_by_tag_name('td')
 
         self.assertNotIn(auction_type.name, [t.text for t in td])
+
+
+class RoleTestCase(LiveServerBaseTestCase):
+
+    def test_role_page_exist(self):
+        url = self.live_server_url + '/admin/users/roles'
+
+        self.browser.get(url)
+        table = self.browser.find_element_by_id('roles-list')
+
+        anchors = table.find_elements_by_tag_name('a')
+
+        self.assertTrue(any([item.get_attribute('href').startswith(
+            url + '/delete') for item in anchors]))
+
+        self.assertTrue(any([item.get_attribute('href').startswith(
+            url + '/edit') for item in anchors]))
+
+        anchors = self.browser.find_elements_by_tag_name('a')
+
+        self.assertTrue(any([(item.get_attribute('href') ==
+                              url + '/add') for item in anchors]))
+
+    def test_add_new_role(self):
+        url = self.live_server_url + '/admin/users/roles'
+
+        self.browser.get(url)
+        role_name = 'super admin'
+
+        td = self.browser.find_elements_by_tag_name('td')
+        self.assertNotIn(role_name, [item.text for item in td])
+
+        add_button = self.browser.find_element_by_id('add-role')
+        add_button.click()
+
+        name_input = self.browser.find_element_by_name('name')
+        name_input.send_keys(role_name)
+
+        submit_button = self.browser.find_element_by_name('submit')
+        submit_button.click()
+
+        td = self.browser.find_elements_by_tag_name('td')
+        self.assertIn(role_name, [item.text for item in td])

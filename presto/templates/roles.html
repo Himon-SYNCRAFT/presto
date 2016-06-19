@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+
+{% block title %}Role użytkowników{% endblock %}
+
+{% block content %}
+<table class="table table-striped" id="roles-list">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Nazwa</th>
+            <th>Edycja</th>
+            <th>Usuń</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for index, role in roles %}
+        <tr>
+            <td>{{ index }}</td>
+            <td>{{ role.name }}</td>
+            <td><a class="btn btn-primary" href="/admin/users/roles/edit/{{ role.id }}"><span>Edytuj <i class="glyphicon glyphicon-edit"></i></span></a></td>
+            <td><a class="btn btn-danger" href="/admin/users/roles/delete/{{ role.id }}"><span>Usuń <i class="glyphicon glyphicon-remove"></i></span></a></td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="4"><a id="add-role" class="btn btn-success" href="/admin/users/roles/add"><span>Nowa rola <i class="glyphicon glyphicon-plus"></i></span></a></td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}

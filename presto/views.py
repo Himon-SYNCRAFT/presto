@@ -1,7 +1,8 @@
 from flask import redirect, render_template, request, url_for
 from presto import app
 from presto.database import db_session
-from presto.forms import UserForm, EditUserForm, ShippingTypesForm, AuctionTypesForm, Length
+from presto.forms import UserForm, EditUserForm, ShippingTypesForm,\
+    AuctionTypesForm, RolesForm
 from presto.models import User, ShippingType, AuctionType, Role
 from sqlalchemy.exc import IntegrityError
 
@@ -198,3 +199,27 @@ def delete_auction_type(auction_type_id):
     db_session.commit()
 
     return redirect(url_for('manage_auction_types'))
+
+
+@app.route('/admin/users/roles')
+def manage_roles():
+    roles = Role.query.all()
+
+    return render_template('roles.html', roles=enumerate(roles, 1))
+
+@app.route('/admin/users/roles/add', methods=['GET', 'POST'])
+def add_role():
+    form = RolesForm(request.form)
+
+    if request.method == 'POST' and form.validate():
+        role = Role(name=form.name.data)
+        db_session.add(role)
+
+        try:
+            db_session.commit()
+            return redirect(url_for('manage_roles'))
+        except IntegrityError:
+            db_session.rollback()
+            form.name.error.append('Nazwa jest już zajęta')
+
+    return render_template('role_add.html', form=form)

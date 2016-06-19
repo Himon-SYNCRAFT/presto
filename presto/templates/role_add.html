@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+
+{% block title %}Dodaj nową rolę{% endblock %}
+
+{% block content %}
+<div class="row">
+    <form action="" method="post">
+        <div class="form-group">
+            <ul class="text-danger">
+                {% for error in form.name.errors %}
+                <li>{{ form.name.label }} {{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="form-group">
+            {{ form.name.label }} {{ form.name(class='form-control') }}
+        </div>
+
+        <div class="form-group">
+            {{ form.submit(class='btn btn-primary') }}
+        </div>
+    </form>
+</div>
+{% endblock %}

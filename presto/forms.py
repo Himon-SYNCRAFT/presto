@@ -38,7 +38,7 @@ class EditUserForm(Form):
 
     role = SelectField('Rola', coerce=int, validators=[
                        InputRequired(message='Pole rola jest polem wymaganym')])
-    
+
     submit = SubmitField('Zapisz')
 
 
@@ -54,6 +54,16 @@ class ShippingTypesForm(Form):
 
 
 class AuctionTypesForm(Form):
+    name = StringField(
+        'Nazwa',
+        [InputRequired('Pole nazwa jest wymagane'),
+         Length(max=128, message='Nazwa musi mieć max 128 znaków')]
+    )
+
+    submit = SubmitField('Zapisz')
+
+
+class RolesForm(Form):
     name = StringField(
         'Nazwa',
         [InputRequired('Pole nazwa jest wymagane'),
