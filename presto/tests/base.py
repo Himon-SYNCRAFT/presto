@@ -1,4 +1,4 @@
-from flask.ext.testing import TestCase, LiveServerTestCase
+from flask_testing import TestCase, LiveServerTestCase
 from presto import app, models
 from presto.database import db_session, Base
 from sqlalchemy import create_engine

@@ -1,4 +1,4 @@
-from flask.ext.testing import LiveServerTestCase
+from flask_testing import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
@@ -350,3 +350,59 @@ class RoleTestCase(LiveServerBaseTestCase):
 
         td = self.browser.find_elements_by_tag_name('td')
         self.assertIn(role_name, [item.text for item in td])
+
+    def test_edit_role(self):
+        role = models.Role.query.first()
+        url = self.live_server_url + '/admin/users/roles'
+
+        self.browser.get(url)
+        role_name = 'super admin'
+
+        table = self.browser.find_element_by_id('roles-list')
+
+        edit_url = '/admin/users/roles/edit/' + str(role.id)
+        edit_button_xpath = "//a[@href='{}']".format(edit_url)
+        edit_button = table.find_element_by_xpath(edit_button_xpath)
+
+        edit_button.click()
+
+        name_input = self.browser.find_element_by_name('name')
+
+        name_input.clear()
+        name_input.send_keys(role_name)
+
+        save_button = self.browser.find_element_by_name('submit')
+
+        save_button.click()
+
+        table = self.browser.find_element_by_id('roles-list')
+        td = table.find_elements_by_tag_name('td')
+
+        self.assertIn(role_name, [t.text for t in td])
+
+    def test_delete_role(self):
+        role_name = 'super_admin'
+        new_role = models.Role(name=role_name)
+        db_session.add(new_role)
+        db_session.commit()
+
+        role = models.Role.query.filter_by(name=role_name).first()
+
+        url = self.live_server_url + '/admin/users/roles'
+
+        self.browser.get(url)
+
+        table = self.browser.find_element_by_id('roles-list')
+        td = table.find_elements_by_tag_name('td')
+        self.assertIn(role_name, [t.text for t in td])
+
+        delete_url = '/admin/users/roles/delete/' + str(role.id)
+        delete_button_xpath = "//a[@href='{}']".format(delete_url)
+        button = table.find_element_by_xpath(delete_button_xpath)
+
+        button.click()
+
+        table = self.browser.find_element_by_id('roles-list')
+        td = table.find_elements_by_tag_name('td')
+
+        self.assertNotIn(role_name, [t.text for t in td])

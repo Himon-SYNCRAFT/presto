@@ -2,7 +2,7 @@ import unittest
 import os
 import signal
 import subprocess
-from flask.ext.script import Manager, Command, Option
+from flask_script import Manager, Command, Option
 from presto import app, models
 from presto.database import Base, db_session
 from presto.tests import functional_tests

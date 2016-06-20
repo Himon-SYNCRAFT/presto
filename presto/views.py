@@ -1,4 +1,4 @@
-from flask import redirect, render_template, request, url_for
+from flask import redirect, render_template, request, url_for, flash
 from presto import app
 from presto.database import db_session
 from presto.forms import UserForm, EditUserForm, ShippingTypesForm,\
@@ -220,6 +220,45 @@ def add_role():
             return redirect(url_for('manage_roles'))
         except IntegrityError:
             db_session.rollback()
-            form.name.error.append('Nazwa jest już zajęta')
+            form.name.errors.append('Nazwa jest już zajęta')
 
     return render_template('role_add.html', form=form)
+
+@app.route('/admin/users/roles/edit/<int:role_id>', methods=['GET', 'POST'])
+def edit_role(role_id):
+    role = Role.query.filter_by(id=role_id).first()
+
+    if role is None:
+        return render_template('errors/404.html'), 404
+
+    form = RolesForm(request.form)
+
+    if request.method == 'POST' and form.validate():
+        role.name = form.name.data
+        db_session.add(role)
+
+        try:
+            db_session.commit()
+            return redirect(url_for('manage_roles'))
+        except IntegrityError:
+            db_session.rollback()
+            form.name.errors.append('Nazwa jest już zajęta')
+
+    return render_template('role_add.html', form=form, role=role)
+
+@app.route('/admin/users/roles/delete/<int:role_id>')
+def delete_role(role_id):
+    role = Role.query.filter_by(id=role_id).first()
+
+    if role is None:
+        return render_template('errors/404.html'), 404
+
+    db_session.delete(role)
+
+    try:
+        db_session.commit()
+    except IntegrityError:
+        db_session.rollback()
+        flash('Nie można usunąć roli, gdy istnieją przypisanie do niej użytkownicy')
+
+    return redirect(url_for('manage_roles'))
