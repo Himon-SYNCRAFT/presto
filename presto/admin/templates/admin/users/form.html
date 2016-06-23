@@ -21,11 +21,11 @@
             </ul>
         </div>
         <div class="form-group">
-            {{ form.login.label }} {{ form.login(class='form-control', value=user.login) }}
+            {{ form.login.label }} {{ form.login(class='form-control', value=user.login if user or '') }}
         </div>
 
         <div class="form-group">
-            {{ form.mail.label }} {{ form.mail(class='form-control', value=user.mail) }}
+            {{ form.mail.label }} {{ form.mail(class='form-control', value=user.mail if user or '') }}
         </div>
 
         <div class="form-group">

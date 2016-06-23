@@ -15,7 +15,7 @@ admin = Blueprint('admin', __name__, template_folder='templates',
 def manage_users():
     users = User.query.all()
 
-    return render_template('admin/manage_users.html', users=enumerate(users, start=1))
+    return render_template('admin/users/list.html', users=enumerate(users, start=1))
 
 
 @admin.route('/users/add', methods=['POST', 'GET'])
@@ -38,7 +38,7 @@ def add_user():
             db_session.rollback()
             form.login.errors.append('Login lub mail jest już używany')
 
-    return render_template('admin/user.html', form=form)
+    return render_template('admin/users/add.html', form=form)
 
 
 @admin.route('/users/delete/<int:user_id>')
@@ -79,13 +79,13 @@ def edit_user(user_id):
             db_session.rollback()
             form.login.errors.append('Login lub mail jest już używany')
 
-    return render_template('admin/edit_user.html', form=form, user=user)
+    return render_template('admin/users/form.html', form=form, user=user)
 
 
 @admin.route('/shipping/types')
 def manage_shipping_types():
     shipping_types = ShippingType.query.all()
-    return render_template('admin/shipping_types.html', shipping_types=enumerate(shipping_types, 1))
+    return render_template('admin/shipping_types/list.html', shipping_types=enumerate(shipping_types, 1))
 
 
 @admin.route('/shipping/types/add', methods=['GET', 'POST'])
@@ -105,7 +105,7 @@ def add_shipping_type():
             db_session.rollback()
             form.name.errors.append('Nazwa jest już zajęta')
 
-    return render_template('admin/shipping_types_add.html', form=form)
+    return render_template('admin/shipping_types/form.html', form=form)
 
 
 @admin.route('/shipping/types/edit/<int:shipping_type_id>', methods=['GET', 'POST'])
@@ -130,7 +130,7 @@ def edit_shipping_type(shipping_type_id):
             db_session.rollback()
             form.name.errors.append('Nazwa jest już zajęta')
 
-    return render_template('admin/shipping_types_edit.html', form=form, shipping_type=shipping_type)
+    return render_template('admin/shipping_types/form.html', form=form, shipping_type=shipping_type)
 
 
 @admin.route('/shipping/types/delete/<int:shipping_type_id>')
@@ -150,7 +150,7 @@ def delete_shipping_type(shipping_type_id):
 def manage_auction_types():
     auction_types = AuctionType.query.all()
 
-    return render_template('admin/auction_types.html', auction_types=enumerate(auction_types, 1))
+    return render_template('admin/auction_types/list.html', auction_types=enumerate(auction_types, 1))
 
 
 @admin.route('/auction/types/add', methods=['GET', 'POST'])
@@ -168,7 +168,7 @@ def add_auction_type():
             db_session.rollback()
             form.name.errors.append('Nazwa jest już zajęta')
 
-    return render_template('admin/auction_types_add.html', form=form)
+    return render_template('admin/auction_types/form.html', form=form)
 
 
 @admin.route('/auction/types/edit/<int:auction_type_id>', methods=['GET', 'POST'])
@@ -191,7 +191,7 @@ def edit_auction_type(auction_type_id):
             db_session.rollback()
             form.name.errors.append('Nazwa jest już zajęta')
 
-    return render_template('admin/auction_types_edit.html', form=form, auction_type=auction_type)
+    return render_template('admin/auction_types/form.html', form=form, auction_type=auction_type)
 
 
 @admin.route('/auction/types/delete/<int:auction_type_id>', methods=['GET'])
@@ -211,7 +211,7 @@ def delete_auction_type(auction_type_id):
 def manage_roles():
     roles = Role.query.all()
 
-    return render_template('admin/roles.html', roles=enumerate(roles, 1))
+    return render_template('admin/roles/list.html', roles=enumerate(roles, 1))
 
 
 @admin.route('/users/roles/add', methods=['GET', 'POST'])
@@ -229,7 +229,7 @@ def add_role():
             db_session.rollback()
             form.name.errors.append('Nazwa jest już zajęta')
 
-    return render_template('admin/role_add.html', form=form)
+    return render_template('admin/roles/form.html', form=form)
 
 
 @admin.route('/users/roles/edit/<int:role_id>', methods=['GET', 'POST'])
@@ -252,7 +252,7 @@ def edit_role(role_id):
             db_session.rollback()
             form.name.errors.append('Nazwa jest już zajęta')
 
-    return render_template('admin/role_add.html', form=form, role=role)
+    return render_template('admin/roles/form.html', form=form, role=role)
 
 
 @admin.route('/users/roles/delete/<int:role_id>')
