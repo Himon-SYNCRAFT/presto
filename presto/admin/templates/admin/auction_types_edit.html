@@ -1,0 +1,21 @@
+{% extends 'admin/layout.html' %}
+
+{% block title %}Dodaj nowy typ aukcji{% endblock %}
+
+{% block content %}
+<form action="" method="post">
+    <div class="form-group">
+        <ul>
+            {% for error in form.name.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="form-group">
+        {{ form.name.label }}{{ form.name(class="form-control", value=auction_type.name) }}
+    </div>
+    <div class="form-group">
+        {{ form.submit(class="btn btn-primary") }}
+    </div>
+</form>
+{% endblock %}

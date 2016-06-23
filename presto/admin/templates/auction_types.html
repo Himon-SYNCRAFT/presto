@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+{% block title %}Rodzaje aukcji{% endblock %}
+
+{% block content %}
+<table id="auction-types-list" class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Nazwa</th>
+            <th>Edytuj</th>
+            <th>Usuń</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for index, item in auction_types %}
+        <tr>
+            <td>{{ index }}</td>
+            <td>{{ item.name }}</td>
+            <td><a class="btn btn-primary" href="/admin/auction/types/edit/{{ item.id }}"><span>Edytuj <i class="glyphicon glyphicon-edit"></i></span></a></td>
+            <td><a class="btn btn-danger" href="/admin/auction/types/delete/{{ item.id }}"><span>Usuń <i class="glyphicon glyphicon-remove"></i></span></a></td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="6"><a id="add-auction-type" class="btn btn-success" href="/admin/auction/types/add"><span>Nowy rodzaj aukcji <i class="glyphicon glyphicon-plus"></i></span></a></td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'admin/layout.html' %}
+
+{% block title %}Edycja użytkowników{% endblock %}
+
+{% block content %}
+<div class="row">
+    <form action="" method="post">
+        <div class="form-group">
+            <ul class="text-danger">
+                {% for error in form.login.errors %}
+                <li>{{ form.login.label }} {{ error }}</li>
+                {% endfor %}
+
+                {% for error in form.mail.errors %}
+                <li>{{ form.mail.label }} {{ error }}</li>
+                {% endfor %}
+
+                {% for error in form.role.errors %}
+                <li>{{ form.role.label }} {{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="form-group">
+            {{ form.login.label }} {{ form.login(class='form-control', value=user.login) }}
+        </div>
+
+        <div class="form-group">
+            {{ form.mail.label }} {{ form.mail(class='form-control', value=user.mail) }}
+        </div>
+
+        <div class="form-group">
+            {{ form.role.label }} {{ form.role(class='form-control') }}
+        </div>
+
+        <div class="form-group">
+            {{ form.submit(class='btn btn-primary') }}
+        </div>
+    </form>
+</div>
+{% endblock %}

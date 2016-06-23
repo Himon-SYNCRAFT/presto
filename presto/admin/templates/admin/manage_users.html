@@ -1,0 +1,33 @@
+{% extends 'admin/layout.html' %}
+
+{% block title %}Zarządzanie użytkownikami{% endblock %}
+
+{% block content %}
+<table id="users-list" class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Login</th>
+            <th>Mail</th>
+            <th>Rola</th>
+            <th>Edycja</th>
+            <th>Usuń</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for index, user in users %}
+        <tr>
+            <td>{{ index }}</td>
+            <td>{{ user.login }}</td>
+            <td>{{ user.mail }}</td>
+            <td>{{ user.role.name }}</td>
+            <td><a class="btn btn-primary" href="/admin/users/edit/{{ user.id }}"><span>Edytuj <i class="glyphicon glyphicon-edit"></i></span></a></td>
+            <td><a class="btn btn-danger" href="/admin/users/delete/{{ user.id }}"><span>Usuń <i class="glyphicon glyphicon-remove"></i></span></a></td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="6"><a id="add-user" class="btn btn-success" href="/admin/users/add"><span>Nowy użytkownik <i class="glyphicon glyphicon-plus"></i></span></a></td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}

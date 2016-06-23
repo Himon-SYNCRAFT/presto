@@ -6,3 +6,6 @@ app.config.from_object('presto.settings.DevelopmentConfig')
 bcrypt = Bcrypt(app)
 
 from presto import views
+from presto.admin.views import admin
+
+app.register_blueprint(admin)

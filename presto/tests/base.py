@@ -1,6 +1,7 @@
 from flask_testing import TestCase, LiveServerTestCase
 from presto import app, models
 from presto.database import db_session, Base
+from presto.admin.views import admin
 from sqlalchemy import create_engine
 from selenium import webdriver
 from selenium.webdriver.chrome import service
