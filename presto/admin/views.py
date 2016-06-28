@@ -1,5 +1,8 @@
+"""
+Views for admin panel. Mostly CRUD.
+"""
+
 from flask import Blueprint, redirect, render_template, request, url_for, flash
-from presto import app
 from presto.database import db_session
 from presto.forms import UserForm, EditUserForm, ShippingTypesForm,\
     AuctionTypesForm, RolesForm

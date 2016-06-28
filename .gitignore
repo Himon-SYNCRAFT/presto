@@ -94,3 +94,5 @@ ENV/
 
 # nodejs modules
 node_modules/
+
+presto/settings.py

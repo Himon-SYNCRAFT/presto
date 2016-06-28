@@ -1,0 +1,2 @@
+class VersionKeyNotAvailable(Exception):
+    pass
